@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_coin_ticker/coin_data.dart';
-import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -10,8 +9,8 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  String selectedCurrency = 'USD';
-  String rate = '?';
+  String selectedCurrency = 'AUD';
+  List<String> rate = ['?', '?', '?'];
 
   DropdownButton<String> getAndroidDropdown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
@@ -55,9 +54,14 @@ class _PriceScreenState extends State<PriceScreen> {
   }
 
   void getData() async {
-    double data = await CoinData().getCoinData(selectedCurrency);
+    Map resultData = await CoinData().getCoinData(selectedCurrency);
     setState(() {
-      rate = data.toStringAsFixed(0);
+      for (var i = 0; i < cryptoList.length; i++) {
+        setState(() {
+          double rateInDouble = resultData[cryptoList[i]];
+          rate[i] = rateInDouble.toStringAsFixed(0);
+        });
+      }
     });
   }
 
@@ -77,26 +81,25 @@ class _PriceScreenState extends State<PriceScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              CryptoCard(
+                rate: rate[0],
+                selectedCurrency: selectedCurrency,
+                cryptoCurrency: cryptoList[0],
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = $rate $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
+              CryptoCard(
+                rate: rate[1],
+                selectedCurrency: selectedCurrency,
+                cryptoCurrency: cryptoList[1],
               ),
-            ),
+              CryptoCard(
+                rate: rate[2],
+                selectedCurrency: selectedCurrency,
+                cryptoCurrency: cryptoList[2],
+              ),
+            ],
           ),
           Container(
             height: 150.0,
@@ -108,6 +111,44 @@ class _PriceScreenState extends State<PriceScreen> {
                 : getAndroidDropdown(),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class CryptoCard extends StatelessWidget {
+  const CryptoCard({
+    Key key,
+    @required this.rate,
+    @required this.selectedCurrency,
+    @required this.cryptoCurrency,
+  }) : super(key: key);
+
+  final String rate;
+  final String selectedCurrency;
+  final String cryptoCurrency;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+      child: Card(
+        color: Colors.lightBlueAccent,
+        elevation: 5.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+          child: Text(
+            '1 $cryptoCurrency = $rate $selectedCurrency',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }

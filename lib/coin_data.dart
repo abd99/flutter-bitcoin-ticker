@@ -38,16 +38,20 @@ class CoinData {
   String rate = '';
 
   Future getCoinData(String currency) async {
-    String finalUrl = '$coinAPIURL/BTC/$currency?apikey=$apiKey';
-    print(finalUrl);
-    var response = await http.get(finalUrl);
-    if (response.statusCode == 200) {
-      var decodedData = convert.jsonDecode(response.body);
-      var lastPrice = decodedData['rate'];
-      return lastPrice;
-    } else {
-      print(response.statusCode);
-      throw 'Problem with the get request';
+    Map priceMap = Map();
+    for (var crypto in cryptoList) {
+      String finalUrl = '$coinAPIURL/$crypto/$currency?apikey=$apiKey';
+      print(finalUrl);
+      var response = await http.get(finalUrl);
+      if (response.statusCode == 200) {
+        var decodedData = convert.jsonDecode(response.body);
+        var lastPrice = decodedData['rate'];
+        priceMap[crypto] = lastPrice;
+      } else {
+        print(response.statusCode);
+        throw 'Problem with the get request';
+      }
     }
+    return priceMap;
   }
 }
