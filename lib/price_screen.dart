@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_coin_ticker/coin_data.dart';
+import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -9,17 +11,39 @@ class PriceScreen extends StatefulWidget {
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'USD';
 
-  List<DropdownMenuItem> getDropDownButtons() {
-    List<DropdownMenuItem<String>> dropDownItems = [];
-
+  DropdownButton<String> getAndroidDropdown() {
+    List<DropdownMenuItem<String>> dropdownItems = [];
     for (var currency in currenciesList) {
       DropdownMenuItem<String> menuItem = DropdownMenuItem(
         child: Text(currency),
         value: currency,
       );
-      dropDownItems.add(menuItem);
+      dropdownItems.add(menuItem);
     }
-    return dropDownItems;
+    return DropdownButton<String>(
+      value: selectedCurrency,
+      items: dropdownItems,
+      onChanged: (value) {
+        setState(() {
+          selectedCurrency = value;
+        });
+      },
+    );
+  }
+
+  CupertinoPicker getIOSPicker() {
+    List<Text> textItems = [];
+    for (var currency in currenciesList) {
+      Text textWidget = Text(currency);
+      textItems.add(textWidget);
+    }
+
+    return CupertinoPicker(
+      backgroundColor: Colors.lightBlue,
+      itemExtent: 32.0,
+      onSelectedItemChanged: (selectedIndex) {},
+      children: textItems,
+    );
   }
 
   @override
@@ -58,15 +82,7 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: DropdownButton<String>(
-              value: selectedCurrency,
-              items: getDropDownButtons(),
-              onChanged: (value) {
-                setState(() {
-                  selectedCurrency = value;
-                });
-              },
-            ),
+            child: Platform.isIOS ? getIOSPicker() : getAndroidDropdown(),
           ),
         ],
       ),
