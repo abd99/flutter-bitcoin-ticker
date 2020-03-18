@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_coin_ticker/coin_data.dart';
 import 'dart:io' show Platform;
@@ -43,13 +44,18 @@ class _PriceScreenState extends State<PriceScreen> {
     return CupertinoPicker(
       backgroundColor: Colors.lightBlue,
       itemExtent: 32.0,
-      onSelectedItemChanged: (selectedIndex) {},
+      onSelectedItemChanged: (selectedIndex) {
+        setState(() {
+          selectedCurrency = currenciesList[selectedIndex];
+          getData();
+        });
+      },
       children: textItems,
     );
   }
 
   void getData() async {
-    double data = await CoinData().getCoinData();
+    double data = await CoinData().getCoinData(selectedCurrency);
     setState(() {
       rate = data.toStringAsFixed(0);
     });
@@ -82,7 +88,7 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ' + rate + ' USD',
+                  '1 BTC = $rate $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -97,7 +103,9 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: Platform.isIOS ? getIOSPicker() : getAndroidDropdown(),
+            child: defaultTargetPlatform == TargetPlatform.iOS
+                ? getIOSPicker()
+                : getAndroidDropdown(),
           ),
         ],
       ),
