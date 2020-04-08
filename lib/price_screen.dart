@@ -41,7 +41,7 @@ class _PriceScreenState extends State<PriceScreen> {
     }
 
     return CupertinoPicker(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: Theme.of(context).accentColor,
       itemExtent: 32.0,
       onSelectedItemChanged: (selectedIndex) {
         setState(() {
@@ -102,10 +102,10 @@ class _PriceScreenState extends State<PriceScreen> {
             ],
           ),
           Container(
-            height: 150.0,
+            height: 100.0,
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
-            color: Colors.lightBlue,
+            color: Theme.of(context).accentColor,
             child: defaultTargetPlatform == TargetPlatform.iOS
                 ? getIOSPicker()
                 : getAndroidDropdown(),
@@ -133,7 +133,7 @@ class CryptoCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
       child: Card(
-        color: Colors.lightBlueAccent,
+        color: Theme.of(context).accentColor,
         elevation: 5.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
